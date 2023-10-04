@@ -1,0 +1,84 @@
+%option noyywrap
+
+
+// LIBRERIAS
+%{
+#include <stdio.h>
+%}
+
+DIGITOS			[0-9]+
+LETRAS          [a-zA-Z]+
+PARENTESIS      "("")"
+CORCHETES       "[""]"
+BLOQUES         "{""}"
+OPERADORLOG     "!"|"||"|"&&"
+PUNTEROS        "->"|"*"
+
+%%
+
+//  ESTRUCTURAS
+int                 { printf("INT "); }
+float               { printf("FLOAT "); }
+short               { printf("SHORT "); }
+long                { printf("LONG "); }
+char                { printf("CHAR "); }
+void                { printf("VOID "); }
+if                  { printf("IF "); }
+else                { printf("ELSE "); }
+while               { printf("WHILE "); }
+do                  { printf("WHILE "); }
+for                 { printf("FOR "); }
+switch              { printf("SWITCH "); }
+case                { printf("CASE "); }
+default             { printf("DEFAULT "); }
+return              { printf("RETURN "); }
+break               { printf("BREAK "); }
+static              { printf("STATIC "); }
+const               { printf("CONST "); }
+
+// VARIABLES Y NUMEROS
+{DIGITOS}           { printf("NUMERO(%s) ", yytext); }
+{DIGITOS}.{DIGITOS} { printf("NUMEROFLOAT(%s) ", yytext); }
+
+{LETRAS}            { printf("IDENTIFICADOR(%s) ", yytext); }
+
+// OPERADORES
+=                   { printf("ASIGNACION "); }
+==                  { printf("IGUALDAD "); }
+<                   { printf("MENOR "); }
+>                   { printf("MAYOR "); }
+<=                  { printf("MENORIGUAL "); }
+>=                  { printf("MAYORIGUAL; "); }
+!=                  { printf("DIFERENTE "); }
+
++                   { printf("SUMA "); }
+-                   { printf("RESTA "); }
+*                   { printf("MULTIPLICACION "); }
+/                   { printf("DIVICION "); }
+%                   { printf("MODULO "); }
+
++=                  { printf("SUMAASIG "); }
+-=                  { printf("RESTAASIG "); }
+*=                  { printf("MULTIPLICACIONASIG "); }
+/=                  { printf("DIVICIONASIG "); }
+%=                  { printf("MODULOASIG "); }
+
+++                  { printf("INCREMENTO "); }
+--                  { printf("DECREMENTO "); }
+
+// OTROS
+[;]                 { printf("FL \n"); }
+[:]                 { printf("ETIQUETA "); }
+[,]                 { printf("SEPARACION "); }
+[ \t\n]             // Ignorar espacios en blanco y saltos de línea
+.                   { printf("Error: Caracter desconocido (%s) ", yytext); }
+
+%%
+
+
+// Programa en C
+int main() {
+    yylex();
+    printf("FIN\n"); // Agregar una marca al final de la salida
+    return 0;
+}
