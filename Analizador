@@ -1,6 +1,5 @@
 %option noyywrap
 
-
 // LIBRERIAS
 %{
 #include <stdio.h>
