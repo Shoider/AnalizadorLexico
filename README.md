@@ -1,2 +1,0 @@
-# AnalizadorLexico
-Compiladores
