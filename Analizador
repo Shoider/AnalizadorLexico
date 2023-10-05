@@ -68,6 +68,8 @@ OP_ASIG_MODULO          "%="
 OP_INCREMENTO   "++"
 OP_DECREMENTO   "--"
 
+FORMAR_E        %([di]|u|[xX]|f|lf|[eE]|[gG]|c|s)    
+
 %%  INICIAN REGLAS
 
 "main"              { printf("main "); }
