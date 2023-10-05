@@ -1,49 +1,48 @@
 %option noyywrap
 %option yylineno
 
-// LIBRERIAS
+/* LIBRERIAS    */
 %{
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 %}
 
-// CARACTERES
+/* CARACTERES   */
 
 NUMERO			[0-9]
 LETRA           [a-zA-Z]
 
-// SIMBOLOS
+/* SIMBOLOS */
 COMENTARIO      [--]
 I_COMENTARIO    ["*/"]
 F_COMENTARIO    ["*/"]
 GUION           [_-]
-ESPACIO         [" "]   --NO SE SI HACE FALTA
 PUNTO           ["."]
 COMA            [","]
 P_COMA          [";"]
 D_PUNTOS        [":"]
 
-// PARENTESIS
+/* PARENTESIS */
 PARENTESIS_I    ["("]
 PARENTESIS_F    [")"]
-CORCHETE_I      ["["]   --TAL VEZ DE ERROR
-CORCHETE_F      ["]"]   --PROBAR
 LLAVE_I         ["{"]
 LLAVE_F         ["}"]
+CORCHETE_I      "["
+CORCHETE_F      "]"
 
-// COMPUESTOS
-ID      {LETRA}({LETRA}|{DIGITO}|{GUION})*
-INT     (-?[1-9]{DIGITO}*)|0
-FLOAT   (-?[1-9]{DIGITO}*){PUNTO}{DIGITO}*
+/* COMPUESTOS  */
+ID      {LETRA}({LETRA}|{NUMERO}|{GUION})*
+INT     (-?[1-9]{NUMERO}*)|0
+FLOAT   (-?[1-9]{NUMERO}*){PUNTO}{NUMERO}*
 CHAR    {LETRA}|{LETRA}*
 
-// EXTRAS
+/* EXTRAS   */
 OPERADOR_LOG     ["!"|"||"|"&&"]
 PUNTEROS        ["->"|"*"]
 CADENA          \"[^\n]*\"
 
-// OPERADORES
+/* OPERADORES   */
 OP_IGUALDAD     "=="
 OP_MENOR        ["<"]
 OP_MAYOR        [">"]
@@ -69,10 +68,9 @@ OP_ASIG_MODULO          "%="
 OP_INCREMENTO   "++"
 OP_DECREMENTO   "--"
 
-%%
-// REGRAS
+%%  INICIAN REGLAS
 
-// PALABRAS RESERVADAS
+"main"              { printf("main "); }
 "auto"              { printf("auto "); }
 "double"            { printf("double "); }
 "int"               { printf("int "); }
@@ -106,10 +104,10 @@ OP_DECREMENTO   "--"
 "static"            { printf("static "); }
 "while"             { printf("while "); }
 
-// LIBRERIAS
-"#include <"{LETRA}{LETRA}*{PUNTO}"h>"  { printf("LIBRERIA(%s) ", yytext); }
 
-// VARIABLES, NUMEROS Y LETRAS
+"#include <"{LETRA}{LETRA}*{PUNTO}"h>"  { printf("LIBRERIA(%s) \n", yytext); }
+
+
 {INT}               { printf("NUMERO(%s) ", yytext); }
 {FLOAT}             { printf("NUMEROFLOAT(%s) ", yytext); }
 {CHAR}              { printf("CARACTER(%s) ", yytext); }
@@ -124,10 +122,10 @@ OP_DECREMENTO   "--"
 {PUNTEROS}          { printf("PUNTERO(%s) ", yytext); }
 {OPERADOR_LOG}      { printf("LOGICO(%s) ", yytext); }
 
-{I_COMENTARIO}|{F_COMENTARIO}    { printf("COMENTARIO(%s) ", yytext);} 
-{COMENTARIO}        { printf("COMENTARIO ); }
+{I_COMENTARIO}|{F_COMENTARIO}   { printf("COMENTARIO(%s) ", yytext); } 
+{COMENTARIO}                    { printf("COMENTARIO "); }
 
-// OPERADORES
+
 {OP_ASIGNACION}     { printf("ASIGNACION "); }
 {OP_IGUALDAD}       { printf("IGUALDAD "); }
 {OP_MENOR}          { printf("MENOR "); }
@@ -152,19 +150,18 @@ OP_DECREMENTO   "--"
 {OP_INCREMENTO}     { printf("INCREMENTO "); }
 {OP_DECREMENTO}     { printf("DECREMENTO "); }
 
-// ESTRUCTURA
-{LLAVE_I}|{LLAVE_F} { printf("LLAVE(%s) ", yytext); }
-{PARENTESIS_I}|{PARENTESIS_F} { printf("PARENTESIS(%s) ", yytext); }
-{CORCHETE_I}|{CORCHETE_F} { printf("CORCHETE(%s) ", yytext); }
 
-// OTROS
+{LLAVE_I}|{LLAVE_F}             { printf("LLAVE(%s) \n", yytext); }
+{PARENTESIS_I}|{PARENTESIS_F}   { printf("PARENTESIS(%s) ", yytext); }
+{CORCHETE_I}|{CORCHETE_F}       { printf("CORCHETE(%s) ", yytext); }
+
+
 [\n]+                // Ignorar saltos de línea
 [ \t]+              { printf(" "); } // Reemplazar espacios y tabulaciones por un espacio en blanco
 .                   { printf("ERROR: CARACTER DESCONOCIDO (%s) ", yytext); }
 
-%%
+%% PROGRAMA EN C
 
-// Programa en C
 int main(int argc, char *argv[]) {      // ARGUMENTOS PARA LECTURA
     
     // SE INTENTA ABRIR EL ARCHIVO 
@@ -182,7 +179,7 @@ int main(int argc, char *argv[]) {      // ARGUMENTOS PARA LECTURA
     }
 
     // SE FINALIZA LA LECTURA
-    printf("\nFINALIZO LA LECTURA DE: %s\n", argv[1]);
+    printf("\nFINALIZO LA LECTURA DE: %s\n\n", argv[1]);
 
     // CERRAMOS EL ARCHIVO
     fclose(yyin);
