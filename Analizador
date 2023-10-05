@@ -4,6 +4,8 @@
 // LIBRERIAS
 %{
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 %}
 
 // CARACTERES
@@ -48,6 +50,7 @@ OP_MAYOR        [">"]
 OP_MENOROIGUAL  "<="
 OP_MAYOROIGUAL  ">="
 OP_DIFERENTE    "!="
+OP_NEGACION     ["!"]
 
 OP_ASIGNACION   ["="]
 
@@ -103,6 +106,9 @@ OP_DECREMENTO   "--"
 "static"            { printf("static "); }
 "while"             { printf("while "); }
 
+// LIBRERIAS
+"#include <"{LETRA}{LETRA}*{PUNTO}"h>"  { printf("LIBRERIA(%s) ", yytext); }
+
 // VARIABLES, NUMEROS Y LETRAS
 {INT}               { printf("NUMERO(%s) ", yytext); }
 {FLOAT}             { printf("NUMEROFLOAT(%s) ", yytext); }
@@ -120,6 +126,7 @@ OP_DECREMENTO   "--"
 
 {I_COMENTARIO}|{F_COMENTARIO}    { printf("COMENTARIO(%s) ", yytext);} 
 {COMENTARIO}        { printf("COMENTARIO ); }
+
 // OPERADORES
 {OP_ASIGNACION}     { printf("ASIGNACION "); }
 {OP_IGUALDAD}       { printf("IGUALDAD "); }
@@ -128,6 +135,7 @@ OP_DECREMENTO   "--"
 {OP_MENOROIGUAL}    { printf("MENORIGUAL "); }
 {OP_MENOROIGUAL}    { printf("MAYORIGUAL; "); }
 {OP_DIFERENTE}      { printf("DIFERENTE "); }
+{OP_NEGACION}       { printf("NEGACION "); }
 
 {OP_SUMA}           { printf("SUMA "); }
 {OP_RESTA}          { printf("RESTA "); }
@@ -150,20 +158,34 @@ OP_DECREMENTO   "--"
 {CORCHETE_I}|{CORCHETE_F} { printf("CORCHETE(%s) ", yytext); }
 
 // OTROS
-[;]                 { printf("FL \n"); }
-[:]                 { printf("ETIQUETA "); }
-[,]                 { printf("SEPARACION "); }
-[ \t\n]             // Ignorar espacios en blanco y saltos de línea
-[ \t]+              { printf(" "); } /* Reemplazar espacios y tabulaciones por un espacio en blanco */
-.                   { printf("Error: Caracter desconocido (%s) ", yytext); }
-
+[\n]+                // Ignorar saltos de línea
+[ \t]+              { printf(" "); } // Reemplazar espacios y tabulaciones por un espacio en blanco
+.                   { printf("ERROR: CARACTER DESCONOCIDO (%s) ", yytext); }
 
 %%
 
-
 // Programa en C
-int main() {
-    yylex();
-    printf("Fin Archivo\n"); // Agregar una marca al final de la salida
+int main(int argc, char *argv[]) {      // ARGUMENTOS PARA LECTURA
+    
+    // SE INTENTA ABRIR EL ARCHIVO 
+    if((yyin = fopen(argv[1], "rt")) == NULL){
+        // NO SE ENCONTRO EL ARCHIVO
+        printf("\nNO SE PUDO ABRIR EL ARCHIVO: %s\n", argv[1]);
+        return 1;
+    }
+    else{
+        // SI SE ENCONTRO EL ARCHIVO
+        printf("\nSE ABRIO CORRECTAMENTE EL ARCHIVO: %s\n", argv[1]);
+        
+        // INICIA LECTURA CON FLEX
+        yylex();
+    }
+
+    // SE FINALIZA LA LECTURA
+    printf("\nFINALIZO LA LECTURA DE: %s\n", argv[1]);
+
+    // CERRAMOS EL ARCHIVO
+    fclose(yyin);
+
     return 0;
 }
